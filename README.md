@@ -5,7 +5,6 @@ Various resources and documentation on the creation of a static archived version
 
 # Documentation
 
-
 ## Step 1: scrape one blog post + all resources
 
     wget --page-requisites --span-hosts --convert-links --adjust-extension -w 5 --random-wait http://blog.kbresearch.nl/2015/07/07/why-pdfa-validation-matters-even-if-you-dont-have-pdfa/ >>$logFile 2>&1
@@ -42,81 +41,7 @@ So we get the following shell script:
     logFile=wget.log
     wget --mirror --page-requisites --span-hosts --convert-links --adjust-extension -w 5 --random-wait --domains=$domains $url >>$logFile 2>&1
 
-This results in 153 MB of data. Index and individual blog posts load correctly without a network connection, but there are some issues:
-
-### *Archive* dropdown menu doesn't work
-
-This happens because the *value* attribute of the *option* tag for each month refers to the live site:
-
-
-    <option value='http://blog.kbresearch.nl/2017/02/'> February 2017 </option>
-    <option value='http://blog.kbresearch.nl/2017/01/'> January 2017 </option>
-    <option value='http://blog.kbresearch.nl/2016/12/'> December 2016 </option>
-    <option value='http://blog.kbresearch.nl/2016/11/'> November 2016 </option>
-    <option value='http://blog.kbresearch.nl/2016/10/'> October 2016 </option>
-    <option value='http://blog.kbresearch.nl/2016/09/'> September 2016 </option>
-
-Possible solutions:
-
-* Rewrite links (but: relative links probably won't work here because they are specific to the page from which they are accessed)
-* Host archived blog on *http://blog.kbresearch.nl* domain, in which case the links should work again
-
-### *Older posts* link at bottom of index pages doesn't work
-
-E.g. from home page:
-
-    <div class="nav-previous"><a href="page/2/index.html" ><span class="meta-nav">&larr;</span> Older posts</a></div>
-
-Mousing over the link in Firefox's "View Source" view resolves to:
-
-<file:///home/johan/ownCloud/blogkbresearch/posts-all/blog.kbresearch.nl/page/2/index.html>
-
-Which is the correct link, but for some reason nothing happens when clicking on the button.
-
-### Some images don't render
-
-E.g. images in this blog don't work:
-
-<file:///home/johan/ownCloud/blogkbresearch/posts-all/blog.kbresearch.nl/2017/02/04/whitts-cure-for-preservationists-despair/index.html>
-
-Example image link:
-
-    <img class="size-medium wp-image-2080 alignleft" src="../../../../../researchkb.files.wordpress.com/2017/02/alice_par_john_tenniel_04.jpg%3Fw=211&amp;h=300" alt="alice_par_john_tenniel_04" width="211" height="300" srcset="https://researchkb.files.wordpress.com/2017/02/alice_par_john_tenniel_04.jpg?w=211&amp;h=300 211w, https://researchkb.files.wordpress.com/2017/02/alice_par_john_tenniel_04.jpg?w=422&amp;h=600 422w, https://researchkb.files.wordpress.com/2017/02/alice_par_john_tenniel_04.jpg?w=105&amp;h=150 105w" sizes="(max-width: 211px) 100vw, 211px" />
-
-The *src* attribute refers to an image file under *researchkb.files.wordpress.com/2017/02/* (which also exists), but apparently the browser gives priority to the images defined in the *srcset* attribute (which were not downloaded locally by *wget*)! Tested with Firefox and Chromium.
-
-In this blog all images are rendered correctly:
-
-<file:///home/johan/ownCloud/blogkbresearch/posts-all/blog.kbresearch.nl/2015/07/07/why-pdfa-validation-matters-even-if-you-dont-have-pdfa/index.html>
-
-Example image link:
-
-    <img src="../../../../../researchkb.files.wordpress.com/2015/07/openpassword.png%3Fw=676" />
-
-
-Solution:
-
-Use more recent version of Wget; parsing of `<img srcset>` was added in Wget 1.18 (used 1.17.1 here!).
-
-### Search form doesn't work
-
-Solution: no idea!
-
-
-### URL encoding error
-
-For the following blog post, the URL contains a special character that results in an encoding error:
-
-</home/johan/ownCloud/blogkbresearch/posts-all/blog.kbresearch.nl/2014/02/27>
-
-Title: `what-if-we-do-in-fact-know-best-a-response-to-the-oclc-report-on-dh-and-research-libraries-�%86%90-dh-lib (invalid encoding)`.
-
-* On Linux fs, the files in the directory (incl. index.html0 cannot be opened
-* Also gives synchronisation error with ownCloud (which seems to stop synchronization altogether afterwards?!)
-
-### i1.wp.com, i2.wp.com
-
-Contains subdir `researchkb.files.wordpress.com` with images from one blog post (which for some reason aren't directly under `researchkb.files.wordpress.com`; maybe merge manually and adjust links).
+This results in 153 MB of data. Index and individual blog posts load correctly without a network connection, but there are some [issues](./issues).
 
 
 <!-- Old stuff
