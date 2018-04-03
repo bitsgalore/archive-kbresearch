@@ -41,7 +41,7 @@ So we get the following shell script:
     logFile=wget.log
     wget --mirror --page-requisites --span-hosts --convert-links --adjust-extension -w 5 --random-wait --domains=$domains $url >>$logFile 2>&1
 
-This results in 153 MB of data. Index and individual blog posts load correctly without a network connection, but there are some [issues](./issues).
+This results in 153 MB of data. Index and individual blog posts load correctly without a network connection, but there are some [issues](https://github.com/bitsgalore/archive-kbresearch/issues).
 
 
 <!-- Old stuff
